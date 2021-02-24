@@ -1,0 +1,214 @@
+<template>
+  <div class="container">
+    <h1 @click="test">todos</h1>
+    <div class="main-content">
+      <input
+        class="todo-input"
+        placeholder="What needs to be done?"
+        @keyup.enter="addTodo"
+      />
+      <ul>
+        <li v-for="(todo, index) in todos" :key="index" @click="toggle(todo)">
+          <span :class="{ done: todo.isComplete, hide: isEdit === todo.id }">{{
+            todo.content
+          }}</span>
+          <input
+            v-if="isEdit === todo.id"
+            class="input-edit"
+            type="text"
+            v-model="content"
+            @keyup.enter="editTodo(todo)"
+          />
+          <div>
+            <span class="edit-text" @click.stop="clickEdit(todo)">Edit</span>
+            <span class="delete-text" @click.stop="deleteTodo(todo)"
+              >Delete</span
+            >
+          </div>
+        </li>
+      </ul>
+      <div class="filter">
+        <span @click="clickAll">All({{ total }})</span>
+        <span @click="clickProgress">Progess({{ countProgress }})</span>
+        <span @click="clickDone">Done({{ countDone }})</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      todoList: [],
+      isEdit: -1,
+      content: '',
+    }
+  },
+  computed: {
+    todos() {
+      return this.$store.state.todos.todoList
+    },
+    total() {
+      return this.$store.state.todos.todoList.length
+    },
+    countProgress() {
+      return this.$store.state.todos.todoList.filter(function (item) {
+        return !item.isComplete
+      }).length
+    },
+    countDone() {
+      return this.total - this.countProgress
+    },
+  },
+  created() {
+    this.$store.dispatch('todos/getTodoList')
+  },
+  methods: {
+    addTodo(e) {
+      if (e.target.value.length) {
+        this.$store.dispatch('todos/addTodo', e.target.value)
+        e.target.value = ''
+      }
+    },
+    editTodo(todo) {
+      console.log(this.content)
+      if (this.content.length) {
+        this.$store.dispatch('todos/editTodo', { todo, content: this.content })
+        this.isEdit = -1
+        this.content = ''
+      }
+    },
+    toggle(todo) {
+      this.$store.dispatch('todos/toggleTodo', todo)
+    },
+    deleteTodo(todo) {
+      this.$store.dispatch('todos/deleteTodo', todo)
+    },
+    clickEdit(todo) {
+      this.isEdit = todo.id
+      this.content = todo.content
+    },
+    test() {
+      console.log(this.todoList)
+    },
+    clickAll() {
+      this.todoList = this.all
+    },
+    clickProgress() {
+      this.todoList = this.progress
+    },
+    clickDone() {},
+  },
+}
+</script>
+
+<style scoped>
+.main-content {
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%), 0 25px 50px 0 rgb(0 0 0 / 10%);
+  background: #fff;
+  width: 40%;
+  margin-top: 50px;
+}
+.hide {
+  display: none;
+}
+.input-edit {
+  font-size: 24px;
+  color: #2c3e50;
+  border: 1px solid rgba(0, 0, 0, 0.144);
+  padding: none;
+  outline: none;
+}
+.todo-input {
+  padding: 16px 16px 16px 16px;
+  border: none;
+  background: rgba(0, 0, 0, 0.003);
+  box-shadow: inset 0 -2px 1px rgb(0 0 0 / 3%);
+  font-size: 24px;
+  line-height: 1.4em;
+  width: 100%;
+  outline: none;
+}
+.done {
+  text-decoration: line-through;
+}
+.container {
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+.edit-text,
+.delete-text {
+  font-size: 18px;
+}
+.edit-text:hover,
+.delete-text:hover {
+  text-decoration: underline;
+}
+.edit-text {
+  color: cadetblue;
+}
+.delete-text {
+  color: rgba(255, 0, 0, 0.363);
+}
+.filter {
+  height: 30px;
+  margin-top: 10px;
+}
+.filter span {
+  font-weight: 500;
+  border: 1px solid rgba(0, 0, 0, 0.301);
+  border-radius: 3px;
+  padding: 3px 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: #2c3e50;
+}
+ul {
+  height: 400px;
+  overflow-y: auto;
+}
+ul,
+li {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+ul > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+ul > li span {
+  font-size: 24px;
+  color: #2c3e50;
+}
+h1 {
+  font-size: 100px;
+  font-weight: 100;
+  text-align: center;
+  color: rgba(218, 45, 74, 0.308);
+}
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>
