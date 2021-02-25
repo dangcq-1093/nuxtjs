@@ -37,11 +37,11 @@ export const mutations = {
     )
     state.todoList[index].isComplete = todo.isComplete
   },
-  edit(state, todo, content) {
+  edit(state, todo) {
     const index = state.todoList.findIndex(
       (todoItem) => todoItem.id === todo.id
     )
-    state.todoList[index].content = content
+    state.todoList[index].content = todo.content
   },
 }
 
@@ -63,22 +63,23 @@ export const actions = {
         vuexContext.commit('add', res)
       })
       .catch(function (err) {
-        console.log(err)
+        alert(err)
       })
   },
   editTodo(vuexContext, data) {
-    console.log(data)
-    // return this.$axios
-    //   .$put(`https://6035ea036496b9001749f8ee.mockapi.io/todos/${todo.id}`, {
-    //     content,
-    //   })
-    //   .then(function (res, content) {
-    //     console.log(content)
-    //     // vuexContext.commit('edit', res, content)
-    //   })
-    //   .catch(function (err) {
-    //     console.log(err)
-    //   })
+    return this.$axios
+      .$put(
+        `https://6035ea036496b9001749f8ee.mockapi.io/todos/${data.todo.id}`,
+        {
+          content: data.content,
+        }
+      )
+      .then(function (res) {
+        vuexContext.commit('edit', res)
+      })
+      .catch(function (err) {
+        alert(err)
+      })
   },
   toggleTodo(vuexContext, todo) {
     return this.$axios
@@ -89,18 +90,17 @@ export const actions = {
         vuexContext.commit('toggle', res)
       })
       .catch(function (err) {
-        console.log(err)
+        alert(err)
       })
   },
   deleteTodo(vuexContext, todo) {
-    console.log(todo)
     return this.$axios
       .$delete(`https://6035ea036496b9001749f8ee.mockapi.io/todos/${todo.id}`)
       .then(function (res) {
         vuexContext.commit('remove', res)
       })
       .catch(function (err) {
-        console.log(err)
+        alert(err)
       })
   },
 }

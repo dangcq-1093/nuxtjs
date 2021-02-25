@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 @click="test">todos</h1>
+    <h1>todos</h1>
     <div class="main-content">
       <input
         class="todo-input"
@@ -8,16 +8,22 @@
         @keyup.enter="addTodo"
       />
       <ul>
-        <li v-for="(todo, index) in todos" :key="index" @click="toggle(todo)">
-          <span :class="{ done: todo.isComplete, hide: isEdit === todo.id }">{{
-            todo.content
-          }}</span>
+        <li
+          v-for="(todo, index) in filterTodos"
+          :key="index"
+          @click.self="toggle(todo)"
+        >
+          <span
+            :class="{ done: todo.isComplete, hide: isEdit === todo.id }"
+            @click.self="toggle(todo)"
+            >{{ todo.content }}</span
+          >
           <input
             v-if="isEdit === todo.id"
+            v-model="content"
             class="input-edit"
             type="text"
-            v-model="content"
-            @keyup.enter="editTodo(todo)"
+            @keydown.enter.stop="editTodo(todo)"
           />
           <div>
             <span class="edit-text" @click.stop="clickEdit(todo)">Edit</span>
@@ -28,9 +34,13 @@
         </li>
       </ul>
       <div class="filter">
-        <span @click="clickAll">All({{ total }})</span>
-        <span @click="clickProgress">Progess({{ countProgress }})</span>
-        <span @click="clickDone">Done({{ countDone }})</span>
+        <span class="all-border" @click="clickAll">All({{ total }})</span>
+        <span class="progress-border" @click="clickProgress"
+          >Progess({{ countProgress }})</span
+        >
+        <span class="done-border" @click="clickDone"
+          >Done({{ countDone }})</span
+        >
       </div>
     </div>
   </div>
@@ -41,13 +51,14 @@ export default {
   data() {
     return {
       todoList: [],
+      filter: 'all',
       isEdit: -1,
       content: '',
     }
   },
   computed: {
-    todos() {
-      return this.$store.state.todos.todoList
+    filterTodos() {
+      return this.$store.getters[`todos/${this.filter}`]
     },
     total() {
       return this.$store.state.todos.todoList.length
@@ -72,7 +83,6 @@ export default {
       }
     },
     editTodo(todo) {
-      console.log(this.content)
       if (this.content.length) {
         this.$store.dispatch('todos/editTodo', { todo, content: this.content })
         this.isEdit = -1
@@ -89,16 +99,15 @@ export default {
       this.isEdit = todo.id
       this.content = todo.content
     },
-    test() {
-      console.log(this.todoList)
-    },
     clickAll() {
-      this.todoList = this.all
+      this.filter = 'all'
     },
     clickProgress() {
-      this.todoList = this.progress
+      this.filter = 'progress'
     },
-    clickDone() {},
+    clickDone() {
+      this.filter = 'done'
+    },
   },
 }
 </script>
@@ -109,6 +118,7 @@ export default {
   background: #fff;
   width: 40%;
   margin-top: 50px;
+  border: 1px solid #ffb5a7;
 }
 .hide {
   display: none;
@@ -129,6 +139,7 @@ export default {
   line-height: 1.4em;
   width: 100%;
   outline: none;
+  border-bottom: 1px solid #ffb5a7;
 }
 .done {
   text-decoration: line-through;
@@ -170,6 +181,15 @@ export default {
   box-sizing: border-box;
   cursor: pointer;
   color: #2c3e50;
+}
+.filter .all-border {
+  border-color: #006d77;
+}
+.filter .done-border {
+  border-color: #d62828;
+}
+.filter .progress-border {
+  border-color: #8ecae6;
 }
 ul {
   height: 400px;

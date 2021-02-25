@@ -41,20 +41,6 @@ export default {}
   align-items: center;
   text-align: center;
 }
-.todo-input {
-  padding: 16px 16px 16px 16px;
-  border: none;
-  background: rgba(0, 0, 0, 0.003);
-  box-shadow: inset 0 -2px 1px rgb(0 0 0 / 3%);
-  font-size: 24px;
-  line-height: 1.4em;
-  width: 100%;
-  outline: none;
-}
-.todo {
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%), 0 25px 50px 0 rgb(0 0 0 / 10%);
-  background: #fff;
-}
 .title {
   font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
